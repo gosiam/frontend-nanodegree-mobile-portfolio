@@ -468,7 +468,7 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
-for (var i = 2; i < 100; i++) {
+for (var i = 2; i < 5; i++) {
   var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
@@ -500,12 +500,46 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
+/* Is there a faster way to access the  DOM than querySElectorAll?//
+The more efficient way to access DOM is through --  document.getElementsByClass()  */
 
   var items = document.querySelectorAll('.mover');
   for (var i = 0; i < items.length; i++) {
+    /*What are the exact numbers that phase and document.body.scrollTop give me per iteration?
+    //Furthermore we see that the phase value depends on the modulo operator '%'.
+    //Moduloar gives us the reainder when we divide i by 5. Therefore we are calculating the same set of 5 numbers
+    //for all of our pizzas no mater how big our list is*/
     var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+//let's log out all these numbers and see!
+
+/*c onsole.log(phase, document.body.scrollTop / 1250)*/
+
+/* Using  style.left, is there a more efficient way to change the position of this object?
+//It looks like the Layout gets re-triggered everytime we scroll. Remember how
+//the browser renders our objectes: DOM - CSSOM - JS - Render Tree -
+// -- Layout -- Paint
+//Perhaps CSS3 hardware acceleration can reduce the need trigger a re-layout? can we offload
+// the  CPU and... the CSS  'translform' property can help us here!!!!*/
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
+/*Advanced hack here: can we also reduce the need for the browser to paint the entier
+screen? Can we tell ... actually moving? Whenever a pixel in a layer changes, the browser
+ repaints the entire layer. Tehrefore  animating pizza in its own layer?
+Therefore whenever we animate the pizzas, only a small part of the ....
+We should look up these CSS hacks to see if they can force our elements into its layer:
+transform: translateX();
+transform: translateZ(0);
+transform translate3d(0,0,0);
+backface-visibility: hidden; -- put this line into the mover class in CSS
+
+Be Careful of these hacks: this hack wreak havoc on mobile devices due to  low VRAM for some mobile devices: 
+moving all of these pizzas to its own composite layer offlaoads the textureing and painting to the GPU.
+but if the GPU cannot handle the extra memory load, there may be even poorer performance.
+
+here in stead of left in 'style.left' in line above put transform: translate.. This gets rid of the need for the relay
+
+*/
+
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -524,6 +558,8 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
+
+  /* I could only animate a handful of pizzas that show up on the screen at any given scroll. that amout of 200 seems too large */
   for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
