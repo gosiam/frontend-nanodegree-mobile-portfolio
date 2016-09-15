@@ -560,15 +560,15 @@ document.addEventListener('DOMContentLoaded', function() {
   var s = 256;
 
   /* I could only animate a handful of pizzas that show up on the screen at any given scroll. that amout of 200 seems too large */
-  for (var i = 0; i < 200; i++) {
+  // 1 is enough in the upper left hand corner for a designer for (var i = 0; i < 2; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s;
+    elem.left = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
-  }
+  //}
   updatePositions();
 });
