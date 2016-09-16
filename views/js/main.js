@@ -337,13 +337,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        document.getElementById("pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        document.getElementById("pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        document.getElementById("pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -355,7 +355,7 @@ var resizePizzas = function(size) {
    // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
+    var windowWidth = document.getElementById("randomPizzas").offsetWidth;
     var oldSize = oldWidth / windowWidth;
 
     // Changes the slider value to a percent width
@@ -399,8 +399,9 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+// Moved pizzasDiv  declaration outside the loop so  only DOM call is made out
+var pizzasDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -434,8 +435,11 @@ function updatePositions() {
 /* Is there a faster way to access the  DOM than querySElectorAll?//
 The more efficient way to access DOM is through --  document.getElementsByClass()  */
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
+//Using a faster WEb API call here
+  var items = document.getElementsByClassName('mover');
+//saving the array length in a local variable so the array's lenth property is not accessed to check its value at each iteration
+  for (var i = 0, l = items.length; i < l; i++) {
+
     /*What are the exact numbers that phase and document.body.scrollTop give me per iteration?
     //Furthermore we see that the phase value depends on the modulo operator '%'.
     //Moduloar gives us the reainder when we divide i by 5. Therefore we are calculating the same set of 5 numbers
@@ -453,24 +457,6 @@ The more efficient way to access DOM is through --  document.getElementsByClass(
 // the  CPU and... the CSS  'translform' property can help us here!!!!*/
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
-/*Advanced hack here: can we also reduce the need for the browser to paint the entier
-screen? Can we tell ... actually moving? Whenever a pixel in a layer changes, the browser
- repaints the entire layer. Tehrefore  animating pizza in its own layer?
-Therefore whenever we animate the pizzas, only a small part of the ....
-We should look up these CSS hacks to see if they can force our elements into its layer:
-transform: translateX();
-transform: translateZ(0);
-transform translate3d(0,0,0);
-backface-visibility: hidden; -- put this line into the mover class in CSS
-
-Be Careful of these hacks: this hack wreak havoc on mobile devices due to  low VRAM for some mobile devices: 
-moving all of these pizzas to its own composite layer offlaoads the textureing and painting to the GPU.
-but if the GPU cannot handle the extra memory load, there may be even poorer performance.
-
-here in stead of left in 'style.left' in line above put transform: translate.. This gets rid of the need for the relay
-
-*/
-
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -489,17 +475,15 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-
-  /* I could only animate a handful of pizzas that show up on the screen at any given scroll. that amout of 200 seems too large */
-  // 1 is enough in the upper left hand corner for a designer for (var i = 0; i < 2; i++) {
+  for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.left = (i % cols) * s;
+    elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
-  //}
+    document.getElementById("movingPizzas1").appendChild(elem);
+  }
   updatePositions();
 });
