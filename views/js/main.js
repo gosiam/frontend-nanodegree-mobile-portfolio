@@ -381,10 +381,10 @@ var resizePizzas = function(size) {
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
     var myPizzaContainer = document.querySelectorAll(".randomPizzaContainer");
-    for (var i = 0; i < myPizzaContainer.length; i++) {
-      let currentPizza = myPizzaContainer[i];
-      var dx = determineDx( currentPizza, size);
-      var newwidth = (currentPizza.offsetWidth + dx) + 'px';
+    for (var i = 0, currentPizza, dx, newwidth ; i < myPizzaContainer.length; i++) {
+      currentPizza = myPizzaContainer[i];
+      dx = determineDx( currentPizza, size);
+      newwidth = (currentPizza.offsetWidth + dx) + 'px';
       currentPizza.style.width = newwidth;
     }
   }
@@ -440,13 +440,15 @@ The more efficient way to access DOM is through --  document.getElementsByClass(
 //Using a faster WEb API call here
   var items = document.getElementsByClassName('mover');
 //saving the array length in a local variable so the array's lenth property is not accessed to check its value at each iteration
-  for (var i = 0, l = items.length; i < l; i++) {
+  var  len = items.length;
+  var topY = document.body.scrollTop / 1250;
+  for (var i = 0 , item ;  i < len; i++) {
+    item = items[i];
 
     /*What are the exact numbers that phase and document.body.scrollTop give me per iteration?
     //Furthermore we see that the phase value depends on the modulo operator '%'.
     //Moduloar gives us the reainder when we divide i by 5. Therefore we are calculating the same set of 5 numbers
     //for all of our pizzas no mater how big our list is*/
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
 //let's log out all these numbers and see!
 
 /*c onsole.log(phase, document.body.scrollTop / 1250)*/
@@ -457,7 +459,8 @@ The more efficient way to access DOM is through --  document.getElementsByClass(
 // -- Layout -- Paint
 //Perhaps CSS3 hardware acceleration can reduce the need trigger a re-layout? can we offload
 // the  CPU and... the CSS  'translform' property can help us here!!!!*/
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+
+    item.style.left = item.basicLeft + 100 *  Math.sin( topY + (i % 5)) + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -477,15 +480,17 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
-    var elem = document.createElement('img');
+  var movingPizzas1 = document.getElementById("movingPizzas1");
+  for (var i = 0, elem, style ; i < 200; i++) {
+    elem = document.createElement('img');
+    style = elem.style;
     elem.className = 'mover';
     elem.src = "images/pizza.png";
-    elem.style.height = "100px";
-    elem.style.width = "73.333px";
+    style.height = "100px";
+    style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
-    elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.getElementById("movingPizzas1").appendChild(elem);
+    style.top = (Math.floor(i / cols) * s) + 'px';
+    movingPizzas1.appendChild(elem);
   }
   updatePositions();
 });
