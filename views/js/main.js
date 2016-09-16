@@ -376,7 +376,7 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    var newSize = sizeSwitcher(size); // size only need to be figured out once 
+    var newSize = sizeSwitcher(size); // size only need to be figured out once
     var myPizzaContainer = document.querySelectorAll(".randomPizzaContainer");
     var windowWidth = document.getElementById("randomPizzas").offsetWidth;
     var len = myPizzaContainer.length;
@@ -475,10 +475,10 @@ window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8; // number of columns 
-  var s = 256; // row height of pizza movable 
+  var cols = 8; // number of columns
+  var s = 256; // row height of pizza movable
   var rows  = screen.height / s;  //  screen.height give me size of window and s is my  movable pizza
-                      // row height , this tells me howmany rows on the screen 
+                      // row height , this tells me howmany rows on the screen
   var movingPizzas1 = document.getElementById("movingPizzas1");
   var numberOfPizzasToDraw = Math.ceil(rows) * cols;
   for (var i = 0, elem, style ; i < numberOfPizzasToDraw ; i++) {
